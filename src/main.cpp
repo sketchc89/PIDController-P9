@@ -60,6 +60,9 @@ int main()
           } else if (steer_value < -1.0) {
             steer_value = -1.0;
           }
+          if (pid.IsTuningOn()) {
+            pid.TunePID();
+          }
           // DEBUG
           std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
 
