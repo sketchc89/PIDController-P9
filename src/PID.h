@@ -4,24 +4,6 @@
 class PID {
 public:
   /*
-  * Errors
-  */
-  double p_error;
-  double i_error;
-  double d_error;
-
-  /*
-  * Coefficients
-  */ 
-  double Kp;
-  double Ki;
-  double Kd;
-
-  double p_tuning;
-  double i_tuning;
-  double d_tuning;
-
-  /*
   * Constructor
   */
   PID();
@@ -47,6 +29,31 @@ public:
   double TotalError();
 
   void TunePID();
+  void EnableTuning();
+  void DisableTuning();
+  bool IsTuningOn();
+private:
+  /*
+  * Coefficients
+  */ 
+  double Kp_;
+  double Ki_;
+  double Kd_;
+  
+  /*
+  * Errors
+  */
+  double p_error_;
+  double i_error_;
+  double d_error_;
+
+  /*
+  * Tuning parameters
+  */
+  bool tuning_;
+  double p_tuning_;
+  double i_tuning_;
+  double d_tuning_;
 };
 
 #endif /* PID_H */

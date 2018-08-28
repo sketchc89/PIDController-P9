@@ -1,3 +1,4 @@
+#include <iostream>
 #include "PID.h"
 
 PID::PID() {}
@@ -5,30 +6,48 @@ PID::PID() {}
 PID::~PID() {}
 
 void PID::Init(double Kp, double Ki, double Kd) {
-    PID::Kp = Kp;
-    PID::Ki = Ki;
-    PID::Kd = Kd;
+    Kp_ = Kp;
+    Ki_ = Ki;
+    Kd_ = Kd;
 
-    PID::p_error = 0.0;
-    PID::i_error = 0.0;
-    PID::d_error = 0.0;
+    p_error_ = 0.0;
+    i_error_ = 0.0;
+    d_error_ = 0.0;
 
-    PID::p_tuning = Kp*0.1;
-    PID::i_tuning = Ki*0.1;
-    PID::d_tuning = Kd*0.1;
+    p_tuning_ = Kp_*0.1;
+    i_tuning_ = Ki_*0.1;
+    d_tuning_ = Kd_*0.1;
+
+    EnableTuning();
 }
 
 void PID::UpdateError(double cte) {
-    PID::d_error = cte - PID::p_error;
-    PID::p_error = cte;
-    PID::i_error += cte;
+    d_error_ = cte - p_error_;
+    p_error_ = cte;
+    i_error_ += cte;
 }
 
 double PID::TotalError() {
-    return -PID::p_error*PID::Kp - PID::i_error*PID::Ki - PID::d_error*Kd;
+    return -p_error_*Kp_ - i_error_*Ki_ - d_error_*Kd_;
 }
 
 void PID::TunePID() {
     //TODO: Implement twiddle
     //PID::p_tuning;
+    if (p_tuning_ + i_tuning_ + d_tuning_ > 0.001) {
+        std::cout << "\nTuning";
+        Kp_ = Kp_;
+        Ki_ = Ki_;
+        Kd_ = Kd_;
+    } else {
+        std::cout << "\nAlready tuned";
+    }
+}
+
+void PID::EnableTuning(){
+    tuning_ = true;
+}
+
+void PID::DisableTuning(){
+    tuning_ = false;
 }
