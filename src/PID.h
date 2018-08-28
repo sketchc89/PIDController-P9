@@ -17,6 +17,10 @@ public:
   double Ki;
   double Kd;
 
+  double p_tuning;
+  double i_tuning;
+  double d_tuning;
+
   /*
   * Constructor
   */
@@ -41,6 +45,8 @@ public:
   * Calculate the total PID error.
   */
   double TotalError();
+
+  void TunePID();
 };
 
 #endif /* PID_H */
