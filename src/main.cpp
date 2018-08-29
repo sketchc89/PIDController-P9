@@ -34,10 +34,11 @@ int main()
 
   PID pid;
   // TODO: Initialize the pid variable.
-  double Kp = 0.1;
-  double Ki = 0.00;
-  double Kd = 2.0;
+  double Kp = 0.163641;
+  double Ki = 0.00149554;
+  double Kd = 2.59429;
   pid.Init(Kp, Ki, Kd);
+  pid.DisableTuning();
   h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -51,20 +52,25 @@ int main()
         if (event == "telemetry") {
           // j[1] is the data JSON object
           double cte = std::stod(j[1]["cte"].get<std::string>());
-          double speed = std::stod(j[1]["speed"].get<std::string>());
-          double angle = std::stod(j[1]["steering_angle"].get<std::string>());
+          // double speed = std::stod(j[1]["speed"].get<std::string>());
+          // double angle = std::stod(j[1]["steering_angle"].get<std::string>());
+          
           pid.UpdateError(cte);
+          
           double steer_value = pid.TotalError();
+          
           if (steer_value > 1.0) {
             steer_value = 1.0;
           } else if (steer_value < -1.0) {
             steer_value = -1.0;
           }
+          
           if (pid.IsTuningOn()) {
             pid.TunePID();
           }
-          // DEBUG
-          std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
+          
+          // std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
+          pid.DisplayPID();
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;

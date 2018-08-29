@@ -1,5 +1,6 @@
 #ifndef PID_H
 #define PID_H
+#include <vector>
 
 class PID {
 public:
@@ -27,8 +28,10 @@ public:
   * Calculate the total PID error.
   */
   double TotalError();
-
+  void DisplayPID();
+  void UpdatePID(double Kp, double Ki, double Kd);
   void TunePID();
+  void TuneParameter(int param_num);
   void EnableTuning();
   void DisableTuning();
   bool IsTuningOn();
@@ -36,24 +39,29 @@ private:
   /*
   * Coefficients
   */ 
-  double Kp_;
-  double Ki_;
-  double Kd_;
+  std::vector<double> PID_;
+  std::vector<double> PID_tuning_;
+  std::vector<double> PID_error_;
+  // double Kp_;
+  // double Ki_;
+  // double Kd_;
   
-  /*
-  * Errors
-  */
-  double p_error_;
-  double i_error_;
-  double d_error_;
+  // /*
+  // * Errors
+  // */
+  // double p_error_;
+  // double i_error_;
+  // double d_error_;
 
   /*
   * Tuning parameters
   */
   bool tuning_;
-  double p_tuning_;
-  double i_tuning_;
-  double d_tuning_;
+  int count_;
+  // double p_tuning_;
+  // double i_tuning_;
+  // double d_tuning_;
+  double best_error_;
 };
 
 #endif /* PID_H */
