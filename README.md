@@ -1,7 +1,12 @@
 # CarND-Controls-PID
 Self-Driving Car Engineer Nanodegree Program
 
+![PID control](docs/pid.gif)
+
 ---
+
+## Project
+The project consisted of developing and tuning a PID controller given a simulation. The PID parameters were manually tuned then adjusted using gradient ascent.
 
 ## Dependencies
 
