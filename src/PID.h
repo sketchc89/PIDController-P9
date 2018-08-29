@@ -42,6 +42,7 @@ private:
   std::vector<double> PID_;
   std::vector<double> PID_tuning_;
   std::vector<double> PID_error_;
+  std::vector<bool> PID_adjusted_;
   // double Kp_;
   // double Ki_;
   // double Kd_;

@@ -11,6 +11,7 @@ void PID::Init(double Kp, double Ki, double Kd) {
     UpdatePID(Kp, Ki, Kd);
     PID_error_ = {0.0, 0.0, 0.0};
     PID_tuning_ = {Kp*0.01, Ki*0.01, Kd*0.01};
+    PID_adjusted_ = {false, false, false};
     count_ = 0; 
     EnableTuning();
 }
@@ -78,24 +79,99 @@ void PID::TuneParameter(int param_num){
 void PID::TunePID() {
     //TODO: Implement twiddle
     //PID::p_tuning;
-    best_error_ = TotalError();
+    best_error_ = 10000000000000.0;
     
     std::cout << "\nCount: " << count_;
     // PID_tuning_[0] + PID_tuning_[1] + PID_tuning_[2] > 0.001 && 
     count_++;
-    if (count_ > 200 && count_ < 2000) {
-        TuneParameter(0);
-        TuneParameter(1);
-        TuneParameter(2);
-    } else {
-        std::cout << "\nAlready tuned";
-        if (count_ > 10000) {
-            count_ = 0;
-            std::cout << "\nRetuning-------------------------------------------------";
+    
+    double current_error = 0;
+    current_error += TotalError();
+
+    if (count_ == 200) {
+        current_error = 0;
+    } else if (count_ == 1200) {
+        if (current_error < best_error_){
+            best_error_ = current_error;
         }
+        current_error = 0;
+        UpdatePID(PID_[0] + PID_tuning_[0], PID_[1], PID_[2]); //p up
+    } else if (count_ == 2200) {
+        if (current_error < best_error_){
+            best_error_ = current_error;
+            PID_adjusted_[0] = true;
+        } else {
+            UpdatePID(PID_[0] - PID_tuning_[0], PID_[1], PID_[2]);
+        }
+        current_error = 0;
+        UpdatePID(PID_[0] - PID_tuning_[0], PID_[1], PID_[2]); //p down
+    } else if (count_ == 3200) {
+        if (current_error < best_error_){
+            best_error_ = current_error;
+            PID_adjusted_[0] = true;
+        } else if (PID_adjusted_[0]) {
+            UpdatePID(PID_[0] + 2*PID_tuning_[0], PID_[1], PID_[2]);
+        } else {
+            UpdatePID(PID_[0] + PID_tuning_[0], PID_[1], PID_[2]);
+        }
+        
+        if (!PID_adjusted_[0]) {
+            PID_tuning_[0] *= 0.9;
+        }
+        current_error = 0;
+        UpdatePID(PID_[0], PID_[1] + PID_tuning_[1], PID_[2]); //i up
+    } 
+    else if (count_ == 4200) {
+        if (current_error < best_error_){
+            best_error_ = current_error;
+            PID_adjusted_[1] = true;
+        } else {
+            UpdatePID(PID_[0], PID_[1] - PID_tuning_[1], PID_[2]);
+        }
+        current_error = 0;
+        UpdatePID(PID_[0], PID_[1] - PID_tuning_[1], PID_[2]); //i down
+    } else if (count_ == 5200) {
+        if (current_error < best_error_){
+            best_error_ = current_error;
+            PID_adjusted_[1] = true;
+        } else if (PID_adjusted_[1]) {
+            UpdatePID(PID_[0], PID_[1] + 2*PID_tuning_[1], PID_[2]);
+        } else {
+            UpdatePID(PID_[0], PID_[1] + PID_tuning_[1], PID_[2]);
+        }
+        
+        if (!PID_adjusted_[1]) {
+            PID_tuning_[1] *= 0.9;
+        }
+        current_error = 0;
+        UpdatePID(PID_[0],  PID_[1], PID_[2] + PID_tuning_[2]); // d up
+    } else if (count_ == 6200) {
+        if (current_error < best_error_){
+            best_error_ = current_error;
+            PID_adjusted_[2] = true;
+        } else {
+            UpdatePID(PID_[0],  PID_[1], PID_[2] - PID_tuning_[2]);
+        }
+        current_error = 0;
+        UpdatePID(PID_[0], PID_[1], PID_[2] - PID_tuning_[2]); // d down
+    } else if (count_ == 7200) {
+        if (current_error < best_error_){
+            best_error_ = current_error;
+            PID_adjusted_[2] = true;
+        } else if (PID_adjusted_[2]) {
+            UpdatePID(PID_[0], PID_[1], PID_[2] + 2*PID_tuning_[2]);
+        } else {
+            UpdatePID(PID_[0], PID_[1], PID_[2] + PID_tuning_[2]);
+        }
+
+        if (!PID_adjusted_[2]) {
+            PID_tuning_[2] *= 0.9;
+        }
+        current_error = 0;
+        count_ = 0;
+        PID_adjusted_ = {false, false, false};
     }
-    // Kp_ = store_Kp;
-    // Ki_ = store_Ki;
+        
 }
 
 void PID::EnableTuning(){
