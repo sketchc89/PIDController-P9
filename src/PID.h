@@ -63,6 +63,7 @@ private:
   // double i_tuning_;
   // double d_tuning_;
   double best_error_;
+  double current_error_;
 };
 
 #endif /* PID_H */

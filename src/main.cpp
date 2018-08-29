@@ -38,7 +38,7 @@ int main()
   double Ki = 0.00149554;
   double Kd = 2.59429;
   pid.Init(Kp, Ki, Kd);
-  pid.DisableTuning();
+  // pid.DisableTuning();
   h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
