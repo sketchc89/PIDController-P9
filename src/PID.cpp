@@ -38,8 +38,6 @@ double PID::TotalError() {
 }
 
 void PID::TunePID() {
-    //TODO: Implement twiddle
-    //PID::p_tuning;
     
     count_++;
     current_error_ += fabs(TotalError());

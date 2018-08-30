@@ -11,7 +11,6 @@ using json = nlohmann::json;
 constexpr double pi() { return M_PI; }
 double deg2rad(double x) { return x * pi() / 180; }
 double rad2deg(double x) { return x * 180 / pi(); }
-
 // Checks if the SocketIO event has JSON data.
 // If there is data the JSON object in string format will be returned,
 // else the empty string "" will be returned.
@@ -33,7 +32,7 @@ int main()
   uWS::Hub h;
 
   PID steer_control, speed_control;
-  steer_control.Init(0.16, 0.00045, 3.2);
+  steer_control.Init(.0672542, .000433982, 0.746406);
   h.onMessage([&steer_control](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
