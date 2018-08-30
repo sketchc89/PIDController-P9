@@ -37,78 +37,38 @@ double PID::TotalError() {
     return -PID_error_[0]*PID_[0] - PID_error_[1]*PID_[1] - PID_error_[2]*PID_[2];
 }
 
-void PID::TuneParameter(int param_num){
-    int tune_p = 0, tune_i = 0, tune_d = 0;
-
-    if (param_num == 0) {
-        tune_p = 1;
-    } else if (param_num == 1) {
-        tune_i = 1;
-    } else if (param_num == 2) {
-        tune_d = 1;
-    } else {
-        throw "Invalid tuning parameter";
-    }
-    
-    UpdatePID(PID_[0] + tune_p*PID_tuning_[0], 
-            PID_[1] + tune_i*PID_tuning_[1], 
-            PID_[2] + tune_d*PID_tuning_[2]);
-    current_error_ = TotalError();
-    if (fabs(current_error_) < fabs(best_error_)) {
-        std::cout << "Increasing param" << param_num << "\n";
-        best_error_ = current_error_;
-        PID_tuning_[param_num] *= 1.1;
-    } else {
-        UpdatePID(PID_[0] + tune_p*PID_tuning_[0], 
-                PID_[1] + tune_i*PID_tuning_[1], 
-                PID_[2] + tune_d*PID_tuning_[2]);
-        current_error_ = TotalError();
-        if (fabs(current_error_) < fabs(best_error_)) {
-            std::cout << "Decreasing param" << param_num << "\n";
-            best_error_ = current_error_;
-            PID_tuning_[param_num] *= 1.1;
-        } else {
-            std::cout << "Reducing tuning parameter " << param_num << "\n";
-            UpdatePID(PID_[0] + tune_p*PID_tuning_[0], 
-                    PID_[1] + tune_i*PID_tuning_[1], 
-                    PID_[2] + tune_d*PID_tuning_[2]);
-            PID_tuning_[param_num] *= 0.9;
-        }
-    }
-}
-
 void PID::TunePID() {
     //TODO: Implement twiddle
     //PID::p_tuning;
     
-    std::cout << "\nCount: " << count_;
-    // PID_tuning_[0] + PID_tuning_[1] + PID_tuning_[2] > 0.001 && 
     count_++;
-    
     current_error_ += fabs(TotalError());
 
     std::cout << "\nCount: " << count_ << "\tError: " << current_error_ << "\tBest Error: " << best_error_;
-    if (count_ == 750) {
+    if (count_ == 570) {
         current_error_ = 0;
-    } else if (count_ == 2250) {
+    
+    } else if (count_ == 1670) {
         if (current_error_ < best_error_){
             best_error_ = current_error_;
         }
         current_error_ = 0;
         UpdatePID(PID_[0] + PID_tuning_[0], PID_[1], PID_[2]); //p up
-    } else if (count_ == 3750) {
+    
+    } else if (count_ == 2770) {
         if (current_error_ < best_error_){
             best_error_ = current_error_;
             PID_adjusted_[0] = true;
-        } else {
-            UpdatePID(PID_[0] - PID_tuning_[0], PID_[1], PID_[2]);
-        }
+            PID_tuning_[0] *= 1.1;
+        } 
         current_error_ = 0;
-        UpdatePID(PID_[0] - PID_tuning_[0], PID_[1], PID_[2]); //p down
-    } else if (count_ == 5250) {
+        UpdatePID(PID_[0] - 2*PID_tuning_[0], PID_[1], PID_[2]); //p down
+    
+    } else if (count_ == 3870) {
         if (current_error_ < best_error_){
             best_error_ = current_error_;
             PID_adjusted_[0] = true;
+            PID_tuning_[0] *= 1.1;
         } else if (PID_adjusted_[0]) {
             UpdatePID(PID_[0] + 2*PID_tuning_[0], PID_[1], PID_[2]);
         } else {
@@ -117,20 +77,22 @@ void PID::TunePID() {
         
         if (!PID_adjusted_[0]) {
             PID_tuning_[0] *= 0.9;
+        } else {
+            PID_tuning_[0] *= 1.1;
         }
         current_error_ = 0;
         UpdatePID(PID_[0], PID_[1] + PID_tuning_[1], PID_[2]); //i up
     } 
-    else if (count_ == 6750) {
+    
+    else if (count_ == 4970) {
         if (current_error_ < best_error_){
             best_error_ = current_error_;
             PID_adjusted_[1] = true;
-        } else {
-            UpdatePID(PID_[0], PID_[1] - PID_tuning_[1], PID_[2]);
         }
         current_error_ = 0;
-        UpdatePID(PID_[0], PID_[1] - PID_tuning_[1], PID_[2]); //i down
-    } else if (count_ == 8250) {
+        UpdatePID(PID_[0], PID_[1] - 2*PID_tuning_[1], PID_[2]); //i down
+    
+    } else if (count_ == 6070) {
         if (current_error_ < best_error_){
             best_error_ = current_error_;
             PID_adjusted_[1] = true;
@@ -142,19 +104,21 @@ void PID::TunePID() {
         
         if (!PID_adjusted_[1]) {
             PID_tuning_[1] *= 0.9;
+        } else {
+            PID_tuning_[1] *= 1.1;
         }
         current_error_ = 0;
         UpdatePID(PID_[0],  PID_[1], PID_[2] + PID_tuning_[2]); // d up
-    } else if (count_ == 9750) {
+    
+    } else if (count_ == 7170) {
         if (current_error_ < best_error_){
             best_error_ = current_error_;
             PID_adjusted_[2] = true;
-        } else {
-            UpdatePID(PID_[0],  PID_[1], PID_[2] - PID_tuning_[2]);
-        }
+        } 
         current_error_ = 0;
-        UpdatePID(PID_[0], PID_[1], PID_[2] - PID_tuning_[2]); // d down
-    } else if (count_ == 11250) {
+        UpdatePID(PID_[0], PID_[1], PID_[2] - 2*PID_tuning_[2]); // d down
+    
+    } else if (count_ == 8270) {
         if (current_error_ < best_error_){
             best_error_ = current_error_;
             PID_adjusted_[2] = true;
@@ -166,12 +130,13 @@ void PID::TunePID() {
 
         if (!PID_adjusted_[2]) {
             PID_tuning_[2] *= 0.9;
+        } else {
+            PID_tuning_[2] *= 1.1;
         }
         current_error_ = 0;
         count_ = 0;
         PID_adjusted_ = {false, false, false};
-    }
-        
+    }      
 }
 
 void PID::EnableTuning(){

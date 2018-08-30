@@ -1,12 +1,20 @@
-# CarND-Controls-PID
+# PID Controller
 Self-Driving Car Engineer Nanodegree Program
 
+## Gradient ascent tuning
+![PID tuned](docs/tuned.gif)
+
+## Manual tuning
 ![PID control](docs/pid.gif)
 
 ---
 
 ## Project
-The project consisted of developing and tuning a PID controller given a simulation. The PID parameters were manually tuned then adjusted using gradient ascent.
+The project consisted of developing and tuning a PID controller for the steering given a simulation. The PID parameters were manually tuned then adjusted using gradient ascent.
+
+Gradient ascent was implemented by timing approximately how long it took to go around the track and tracking the error along one full lap of the track. Using a full lap made it easier to judge the best parameters as the controller had to deal with the same terrain for all sets of parameters. Parameters were adjusted up and down on each lap of the track. The tuning script was allowed to run over night to ensure the (locally) optimal parameters were reached.
+
+Throttle was arbitrarily set to 0.5 because it was faster than most other projects (steady state around 50 mph), but not too fast to do the inital manually tuning.
 
 ## Dependencies
 
