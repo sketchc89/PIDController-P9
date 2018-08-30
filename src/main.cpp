@@ -32,7 +32,8 @@ int main()
   uWS::Hub h;
 
   PID steer_control, speed_control;
-  steer_control.Init(.0672542, .000433982, 0.746406);
+  steer_control.Init(.0672542, .000433982, 0.746406); // 0.5 throttle
+  // steer_control.Init(.0272542, .000233982, 1.546406); // 0.6 throttle
   h.onMessage([&steer_control](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
