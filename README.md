@@ -16,6 +16,13 @@ Gradient ascent was implemented by timing approximately how long it took to go a
 
 Throttle was arbitrarily set to 0.5 because it was faster than most other projects (steady state around 50 mph), but not too fast to do the inital manually tuning.
 
+### Parameters
+* P is the tendency of the vehicle to return to the center. When it is too high it will oscillate but will reach the control value faster. When it is too low it will fail to return to the center of the lane.
+* I is useful for correcting small offsets when a signal is approaching a control value asymptotically.
+* D is useful for making the vehicle approach the center line more smoothly, but if it is too high it will lead to overshoot and instability.
+
+Given the above, the most common approach for manually tuning is to get the P value correct and adjust the I and D from 0 to smooth the trajectory of the vehicle.
+
 ## Dependencies
 
 * cmake >= 3.5
